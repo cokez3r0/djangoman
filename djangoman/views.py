@@ -3,11 +3,21 @@ from django.http import HttpResponse
 from .models import Question
 from django.utils import timezone
 from .forms import QuestionForm, AnswerForm
+from django.core.paginator import Paginator
 
 # Create your views here.
 def index(request):
+    #입력인자
+    page = request.GET.get('page', '1')
+
+    #질문목록
     question_list = Question.objects.order_by('-create_date')
-    context = {'question_list' : question_list}
+
+    #페이징처리
+    paginator = Paginator(question_list, 10) #10 per page
+    page_obj = paginator.get_page(page)
+
+    context = {'question_list' : page_obj}
     return render(request, 'djangoman/question_list.html', context)
     #return HttpResponse("Hello this is djangoman")
 
